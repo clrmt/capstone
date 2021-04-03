@@ -1,4 +1,3 @@
-import gym
 import os
 import random
 import numpy as np
@@ -6,48 +5,46 @@ from collections import deque
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
-from keras.initializers import glorot_normal
+from hyperparameters import *
 
-# 나중에 환경이 완성되면 이것을 사용
-#from env import *
-#Env(True)
+import gym
+env = gym.make("CartPole-v1")
+inputDim = 4
+outputDim = 2
 
-gamma = 0.95
-epsilon = 1
-
-env = gym.make('CartPole-v1')
-
-memory = deque()
+memory = deque(maxlen=bufferSize)
 
 # 네트워크 생성, 컴파일
 model = Sequential()
-model.add(Dense(32, input_dim=4, kernel_initializer=glorot_normal(), activation='relu'))
-model.add(Dense(32, activation='relu'))
-model.add(Dense(2, activation='linear'))
-model.compile(loss='mse', optimizer=Adam(lr=0.0005))
+model.add(Dense(64, input_dim=inputDim, activation='relu'))
+model.add(Dense(64, activation='relu'))
+model.add(Dense(outputDim))
+model.compile(loss='mse', optimizer=Adam(lr=learningRate))
 if os.path.isfile("save.h5"):
     model.load_weights("save.h5")
 
 for episodeNumber in range(500):
     state = env.reset()
-    state = np.reshape(state, [1, 4])
+    state = np.reshape(state, [1, inputDim])
 
     maxFrame = 0
+    totalReward = 0
 
     done = False
     for frameCounter in range(500):
         env.render()
 
         if np.random.rand() <= epsilon:
-            action = random.randrange(2)
+            action = random.randrange(outputDim)
         else :
             action = np.argmax(model.predict(state)[0])
 
         next_state, reward, done, _ = env.step(action)
-        next_state = np.reshape(next_state, [1, 4])
+        next_state = np.reshape(next_state, [1, inputDim])
 
         memory.append((state, action, reward, next_state, done))
 
+        totalReward += reward
         state = next_state
 
         maxFrame = frameCounter
@@ -55,14 +52,15 @@ for episodeNumber in range(500):
         if done == True:
             break
 
-    print("에피소드", episodeNumber, ": ", maxFrame)
+    print("에피소드", episodeNumber, ": ", maxFrame, "보상 합:", totalReward)
 
     # replay memory
-    while len(memory) >= 512:
+    if len(memory) >= replaySize:
         random.shuffle(memory)
 
-        for i in range(64):
-            state, action, reward, next_state, done = memory.pop()
+        for i in range(replaySize):
+            state, action, reward, next_state, done = memory[i]
+            
             target = reward
             if not done:
                 target = reward + gamma * np.amax(model.predict(next_state)[0])
@@ -71,13 +69,10 @@ for episodeNumber in range(500):
 
             model.fit(state, target_f, epochs=1, verbose=0) # gradient 자동 계산(매우 느림) -> 나중에 개선
 
-        if len(memory) < 1024:
-            break
-    
     # 랜덤으로 선택할 확률(e-greedy)
-    epsilon *= 0.997
-    if epsilon < 0.05:
-        epsilon = 0.05
+    epsilon *= epsilonDecay
+    if epsilon < epsilonMin:
+        epsilon = epsilonMin
 
     # 때때로 파일로 저장
     if episodeNumber % 10 == 9:
