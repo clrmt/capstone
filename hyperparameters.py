@@ -4,11 +4,11 @@ firstLayer = 64
 secondLayer = 64
 
 # only DQN
-episodeNumber = 1000
+episodeNumber = 2000
 bufferSize = 2048
 replaySize = 64
 epsilon = 1.0
-epsilonDecay = 0.997
+epsilonDecay = 0.999
 epsilonMin = 0.05
 
 # only AC
