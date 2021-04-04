@@ -7,10 +7,10 @@ from keras.layers import Dense
 from keras.optimizers import Adam
 from hyperparameters import *
 
-import gym
-env = gym.make("CartPole-v1")
-inputDim = 4
-outputDim = 2
+from env import *
+env = Env(False)
+inputDim = 2
+outputDim = 5
 
 memory = deque(maxlen=bufferSize)
 
@@ -60,7 +60,6 @@ for episodeNumber in range(500):
 
         for i in range(replaySize):
             state, action, reward, next_state, done = memory[i]
-            
             target = reward
             if not done:
                 target = reward + gamma * np.amax(model.predict(next_state)[0])
