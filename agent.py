@@ -17,8 +17,8 @@ memory = deque(maxlen=bufferSize)
 
 # 네트워크 생성, 컴파일
 model = Sequential()
-model.add(Dense(64, input_dim=inputDim, activation='relu'))
-model.add(Dense(64, activation='relu'))
+model.add(Dense(firstLayer, input_dim=inputDim, activation='relu'))
+model.add(Dense(secondLayer, activation='relu'))
 model.add(Dense(outputDim))
 opt = Adam(lr=learningRate)
 #model.compile(loss='mse', optimizer=Adam(lr=learningRate))
@@ -57,7 +57,7 @@ for episodeNumber in range(episodeNumber):
         if done == True:
             break
 
-    print("에피소드", episodeNumber, ": ", maxFrame, "보상 합:", totalReward)
+    print("에피소드 ", episodeNumber, " : ", maxFrame, ", epsilon: ", epsilon, ", 보상 합:", totalReward, sep='')
 
     # replay memory
     if len(memory) >= replaySize:
