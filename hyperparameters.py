@@ -1,12 +1,16 @@
-episodeNumber = 1000
-stepNumber = 1000
 gamma = 0.99
-learningRate = 0.001
-layerNode = 128
+learningRate = 0.0005
+firstLayer = 128
+secondLayer = 64
 
-#only DQN
-epsilon = 0.0
-epsilonDecay = 0.9995
-epsilonMin = 0.01
+# only DQN
+episodeNumber = 15000
 bufferSize = 2048
 replaySize = 64
+epsilon = 0.0
+epsilonDecay = 0.999
+epsilonMin = 0.05
+
+# only AC
+learningRateActor = 0.0005
+learningRateCritic = 0.002
