@@ -2,6 +2,7 @@ import os
 import random
 import numpy as np
 from collections import deque
+from matplotlib import pyplot as plt
 import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense
@@ -10,15 +11,14 @@ from hyperparameters import *
 
 from env import *
 env = Env(False)
-inputDim = 2
+inputDim = 3
 outputDim = 5
 
 memory = deque(maxlen=bufferSize)
 
 # 네트워크 생성, 컴파일
 model = Sequential()
-model.add(Dense(firstLayer, input_dim=inputDim, activation='relu'))
-model.add(Dense(secondLayer, activation='relu'))
+model.add(Dense(128, input_dim=inputDim, activation='relu'))
 model.add(Dense(outputDim))
 opt = Adam(lr=learningRate)
 #model.compile(loss='mse', optimizer=Adam(lr=learningRate))
@@ -26,7 +26,10 @@ opt = Adam(lr=learningRate)
 if os.path.isfile("save.h5"):
     model.load_weights("save.h5")
 
-for episodeNumber in range(episodeNumber):
+reward_avg = 0
+reward_avgs = []
+
+for i in range(episodeNumber):
     state = env.reset()
     state = np.reshape(state, [1, inputDim])
 
@@ -35,7 +38,7 @@ for episodeNumber in range(episodeNumber):
 
     done = False
     
-    for frameCounter in range(500):
+    for frameCounter in range(1000):
         env.render()
         sleep(0.03)
 
@@ -56,8 +59,14 @@ for episodeNumber in range(episodeNumber):
 
         if done == True:
             break
-
-    print("에피소드 ", episodeNumber, " : ", maxFrame, ", epsilon: ", epsilon, ", 보상 합:", totalReward, sep='')
+    if i == 0:
+        reward_avg = totalReward
+    else:
+        reward_avg = reward_avg * 0.99 + totalReward * 0.01
+    reward_avgs.append(reward_avg)
+        
+    if i % 100 == 0:
+        print("에피소드 ", i, " : ", maxFrame, ", epsilon: ", epsilon, ", 보상 합:", totalReward, sep='')
 
     # replay memory
     if len(memory) >= replaySize:
@@ -85,5 +94,8 @@ for episodeNumber in range(episodeNumber):
         epsilon = epsilonMin
 
     # 때때로 파일로 저장
-    if episodeNumber % 20 == 9:
+    if i % 20 == 9:
         model.save("save.h5")
+
+plt.plot(reward_avgs)
+plt.show()
