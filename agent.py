@@ -10,18 +10,18 @@ from keras.optimizers import Adam
 from hyperparameters import *
 
 from env import *
-env = Env(False)
-inputDim = 3
-outputDim = 5
+env = Env(False, "stageBuilder")
+inputDim = len(env.reset())
+outputDim = env.actionSize
 
 memory = deque(maxlen=bufferSize)
 
-# 네트워크 생성, 컴파일
 model = Sequential()
-model.add(Dense(128, input_dim=inputDim, activation='relu'))
+model.add(Dense(layerNode, input_dim=inputDim, activation='relu'))
+model.add(Dense(layerNode, activation='relu'))
+model.add(Dense(layerNode, activation='relu'))
 model.add(Dense(outputDim))
-opt = Adam(lr=learningRate)
-#model.compile(loss='mse', optimizer=Adam(lr=learningRate))
+opt = Adam(lr=learningRateDQN)
 
 if os.path.isfile("save.h5"):
     model.load_weights("save.h5")
@@ -38,7 +38,7 @@ for i in range(episodeNumber):
 
     done = False
     
-    for frameCounter in range(1000):
+    for frameCounter in range(stepNumber):
         env.render()
         sleep(0.03)
 
@@ -49,6 +49,8 @@ for i in range(episodeNumber):
 
         next_state, reward, done, _ = env.step(action)
         next_state = np.reshape(next_state, [1, inputDim])
+
+        #print(next_state, reward)
 
         memory.append((state, action, reward, next_state, done))
 
@@ -67,6 +69,7 @@ for i in range(episodeNumber):
         
     if i % 100 == 0:
         print("에피소드 ", i, " : ", maxFrame, ", epsilon: ", epsilon, ", 보상 합:", totalReward, sep='')
+        model.save("save.h5")
 
     # replay memory
     if len(memory) >= replaySize:
@@ -92,10 +95,6 @@ for i in range(episodeNumber):
     epsilon *= epsilonDecay
     if epsilon < epsilonMin:
         epsilon = epsilonMin
-
-    # 때때로 파일로 저장
-    if i % 20 == 9:
-        model.save("save.h5")
 
 plt.plot(reward_avgs)
 plt.show()

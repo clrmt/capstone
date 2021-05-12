@@ -1,13 +1,19 @@
+import os
+from copy import deepcopy
+import tensorflow as tf
+import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense
 from tkinter import *
 from time import *
+import math
 import random
+from hyperparameters import *
 
 class Renderer:
-    global playerHP
-    
     def __init__(self, state):
         self.main = Tk()
-        self.canvas = Canvas(self.main, width=500, height=400)
+        self.canvas = Canvas(self.main, width=640, height=480)
         self.canvas.pack()
         self.main.bind('<Left>', keyLDown)
         self.main.bind('<KeyRelease-Left>', keyLUp)
@@ -25,41 +31,29 @@ class Renderer:
         self.main.bind('r', summon4)
         self.main.bind('t', summon5)
         self.main.bind('y', summon6)
-        
-        self.spritesheet = PhotoImage(file="spritesheet.gif")
+
+        self.bg = PhotoImage(file="bg.png")
+        self.spritesheet = PhotoImage(file="sprite.png")
 
         self.img = [] # 스프라이트에서 이미지 뽑아서 저장
         self.imgXY = []
         tmp = []
-        tmp.append([112, 4, 136, 48]) # left, up, right, down
-        tmp.append([137, 4, 161, 48]) # left, up, right, down
-        tmp.append([164, 4, 182, 48]) # left, up, right, down
-        tmp.append([184, 4, 207, 51]) # left, up, right, down
-        tmp.append([212, 4, 233, 51]) # left, up, right, down
-        tmp.append([234, 4, 251, 48]) # left, up, right, down
-        tmp.append([255, 4, 279, 48]) # left, up, right, down
-        tmp.append([281, 4, 304, 48]) # left, up, right, down
-
-        tmp.append([172, 50, 214, 92]) # left, up, right, down
-        tmp.append([214, 50, 252, 92]) # left, up, right, down
+        tmp.append([35, 50, 140, 100]) # 왼쪽 걷기1
+        tmp.append([185, 50, 290, 100]) # 왼쪽 걷기2
+        tmp.append([160, 200, 265, 250]) # 오른쪽 걷기1
+        tmp.append([310, 200, 415, 250]) # 오른쪽 걷기2
+        tmp.append([35, 200, 140, 250]) # 왼쪽 공격1
+        tmp.append([10, 350, 115, 400]) # 오른쪽 공격1
         self.imgXY.append(tmp)
 
         tmp = []
-        tmp.append([211, 345, 229, 387]) # left, up, right, down
-        tmp.append([230, 345, 250, 387]) # left, up, right, down
-        tmp.append([252, 345, 272, 387]) # left, up, right, down
-        tmp.append([272, 345, 287, 387]) # left, up, right, down
-        tmp.append([287, 345, 307, 387]) # left, up, right, down
-        tmp.append([307, 345, 338, 387]) # left, up, right, down
+        tmp.append([350, 980, 400, 1030]) # 성게
         self.imgXY.append(tmp)
         
         tmp = []
-        tmp.append([188, 345, 207, 387]) # left, up, right, down
-        tmp.append([168, 345, 188, 387]) # left, up, right, down
-        tmp.append([148, 345, 168, 387]) # left, up, right, down
-        tmp.append([130, 345, 148, 387]) # left, up, right, down
-        tmp.append([110, 345, 130, 387]) # left, up, right, down
-        tmp.append([80, 345, 110, 387]) # left, up, right, down
+        tmp.append([500, 900, 554, 954]) # 0
+        tmp.append([554, 900, 608, 954]) # 1
+        tmp.append([608, 900, 662, 954]) # 2
         self.imgXY.append(tmp)
         
         for a in self.imgXY:
@@ -76,25 +70,29 @@ class Renderer:
     def update(self, state):
         self.main.update()
         self.canvas.delete("all")
+        self.canvas.create_image(0, 0, anchor=NW, image=self.bg)
         for a in state: # 표시
-            self.canvas.create_image(a.x, a.y - (self.imgXY[a.code][a.img][3] - self.imgXY[a.code][a.img][1]) / 2, anchor=NW, image=self.img[a.code][a.img])
-        self.canvas.create_text(50, 50, text="HP: " + str(playerHP))
+            if a.code != 0:
+                self.canvas.create_image(a.x - (self.imgXY[a.code][a.img][2] - self.imgXY[a.code][a.img][0]) / 2, a.y - (self.imgXY[a.code][a.img][3] - self.imgXY[a.code][a.img][1]) / 2, anchor=NW, image=self.img[a.code][a.img])
+        for a in state:
+            if a.code == 0:
+                self.canvas.create_image(a.x - (self.imgXY[a.code][a.img][2] - self.imgXY[a.code][a.img][0]) / 2, a.y - (self.imgXY[a.code][a.img][3] - self.imgXY[a.code][a.img][1]) / 2, anchor=NW, image=self.img[a.code][a.img])
 
 entitySize = 7
-summon = [0, 1, 0, 0, 0, 0, 0]
+summon = [0, 0, 0, 0, 0, 0, 0]
 death = [0, 0, 0, 0, 0, 0, 0]
 def summon1(e):
     summon[1] += 1
 def summon2(e):
-    summon[2] += 1
+    summon[2] += 0
 def summon3(e):
-    summon[3] += 1
+    summon[3] += 0
 def summon4(e):
-    summon[4] += 1
+    summon[4] += 0
 def summon5(e):
-    summon[5] += 1
+    summon[5] += 0
 def summon6(e):
-    summon[6] += 1
+    summon[6] += 0
 
 # 키보드 눌렸는지 여부
 keyL = False
@@ -144,8 +142,6 @@ def keyXDown(e):
     global keyX
     keyX = 3
 
-playerHP = 100
-
 class Entity:
     def __init__(self, code, img, x, y):
         self.code = code
@@ -156,233 +152,381 @@ class Entity:
 def createEntity(code, img, x, y):
     ret = Entity(code, img, x, y)
     if code == 0:
-        ret.direction = 0
         ret.walkFrame = 0
-        ret.stopFrame = 0
-    if code == 1:
-        ret.walkFrame = 0
-        ret.handsup = 0
+        ret.jumpFrame = 0
+        ret.ySpeed = 0
+        ret.jumpLeft = 1
+    if code == 1: # enemy
         ret.hp = 1
-        ret.deadFrame = 0
-    if code == 2:
-        ret.walkFrame = 0
-        ret.handsup = 0
-        ret.hp = 1
-        ret.deadFrame = 0
+    if code == 2: # platform
+        ret.chain = 1
     return ret
 
 class Env:
-    def __init__(self, manual=False):
+    def __init__(self, manual=False, option=""):
 
-        self.coolDown = 10 # 엔터티 등장 쿨다운
+        self.model = False
+        self.actionSize = 2
         self.state = []
-        self.clearState()
         self.renderer = False
-        
+        self.option = option
+        self.stage = []
+        self.x = 0
+        self.nextIndex = 0
+
+        if option == "stageBuilder":
+            env = Env(False, False)
+            inputDim = len(env.reset())
+            self.inputDim = inputDim
+            outputDim = self.actionSize
+            self.outputDim = outputDim
+            
+            self.model = Sequential()
+            self.model.add(Dense(layerNode, input_dim=inputDim, activation='relu'))
+            self.model.add(Dense(layerNode, activation='relu'))
+            self.model.add(Dense(layerNode, activation='relu'))
+            self.model.add(Dense(outputDim))
+            
+            if os.path.isfile("save.h5"):
+                print("save.h5 파일이 환경에 로드되었습니다. 스테이지 생성시 agent를 사용합니다.")
+                self.model.load_weights("save.h5")
+            else:
+                print("save.h5 파일이 존재하지 않습니다. 스테이지를 무작위로 생성합니다.")
+                self.model = False
+        else:
+            print("스테이지를 무작위로 생성합니다.")
+            self.model = False
+            
         if manual:
+            self.buildStage()
             self.renderer = Renderer(self.state)
             while True:
                 self.update()
                 self.render()
                 sleep(0.03)
 
+    def setStage(self, newStage):
+        self.stage = deepcopy(newStage)
+
+    # 맵 생성
+    def buildStage(self):
+        self.stage = []
+        playerSpawn = False
+        nextPosition = 90
+
+        stageLength = 5000
+        process = 0
+        
+        tryCount = 1000
+        indexArray = []
+        positionArray = []
+        failLimit = 2
+        failCount = []
+        unit = 500
+        depth = 0
+
+        indexArray.append(0)
+        positionArray.append(90)
+        failCount.append(0)
+
+        # stage build with model
+        if self.model != False:
+            while positionArray[depth] < stageLength and tryCount > 0:
+                tryCount -= 1
+
+                if depth == 0:
+                    positionArray[depth] = 90
+                else:
+                    positionArray[depth] = positionArray[depth - 1]
+                self.stage = self.stage[0:indexArray[depth]]
+                # build unit
+                while positionArray[depth] < (depth + 1) * unit:
+                    dx = int(random.uniform(10, 200))# * (1.0 - random.random() * random.random()))
+                    y = random.randrange(100, 380)
+                    n = random.randrange(2, 5)
+                    self.stage.append([2, positionArray[depth], y, n])
+                    positionArray[depth] += dx + n * 54
+                    #positionArray[depth] += dx
+
+                self.state = []
+                self.nextIndex = 0
+                # 첫 발판 위에 플레이어를 생성
+                for a in self.stage:
+                    if a[0] == 2: # code == platform
+                        self.state.append(createEntity(0, 2, a[1], a[2] - 48)) # player의 경우 = [entity code, img code, x, y]
+                        a[3] = 5 # 첫 발판의 길이는 항상 5
+                        break
+                self.x = 0
+
+                #print("depth=", depth, len(failCount), len(positionArray), len(indexArray), len(self.state), len(self.stage))
+                agentSuccess = 1
+                while self.x < positionArray[depth]:
+
+                    '''
+                    if self.renderer == False:
+                        self.renderer = Renderer(self.state)
+                    self.render()
+                    sleep(0.03)
+                    '''
+                    
+                    cState = self.getState()
+                    cState = np.reshape(cState, [1, self.inputDim]) 
+                    action = np.argmax(self.model(cState)[0])
+                    _a, _b, done, _c = self.step(action)
+                    if done == True:
+                        agentSuccess = 0
+                        break
+                
+                if agentSuccess == 1:
+                    #print("success agent")
+                    # agent가 통과
+                    depth += 1
+                    indexArray.append(len(self.stage))
+                    positionArray.append(positionArray[depth - 1])
+                    failCount.append(0)
+                else:
+                    failCount[depth] += 1
+                    if failCount[depth] >= failLimit:
+                        depth -= 1
+                        if depth < 0:
+                            depth = 0
+                            indexArray[0] = 0
+                            positionArray[0] = 90
+                        else:
+                            indexArray.pop()
+                            positionArray.pop()
+                            failCount.pop()
+                    else:
+                        if depth == 0:
+                            indexArray[0] = 0
+                            positionArray[0] = 90
+                        else:
+                            positionArray[depth] = positionArray[depth - 1]
+
+                while positionArray[depth] / 500 > process:
+                    if process < 10:
+                        print("스테이지 생성:", process, "/", stageLength // 500)
+                    process += 1
+
+        if positionArray[depth] / 500 > 10:
+            print("스테이지 생성: 10 / 10")
+        elif process > 0:
+            print("agent를 이용한 스테이지 생성에 실패하였습니다. 랜덤 배치를 사용합니다.")
+
+        nextPosition = positionArray[depth]
+        # 자동 생성이 실패했다면, 그 이후의 작업은 랜덤으로 생성
+        while nextPosition < stageLength:
+            dx = int(random.uniform(10, 200) * (1.0 - random.random() * random.random()))
+            y = random.randrange(100, 380)
+            n = random.randrange(2, 5)
+            self.stage.append([2, nextPosition, y, n])
+            nextPosition += dx + n * 54
+
+        self.nextIndex = 0 # 다음으로 읽을 Entity
+        self.state = []
+        self.x = 0
+
+        # 첫 발판 위에 플레이어를 생성
+        for a in self.stage:
+            if a[0] == 2: # code == platform
+                self.state.append(createEntity(0, 2, a[1], a[2] - 48)) # player의 경우 = [entity code, img code, x, y]
+                a[3] = 5 # 첫 발판의 길이는 항상 5
+                break
+        
     # 1프레임 마다
     def update(self):
-        global playerHP
         global keyZ
         global keyX
+        global keyL
+        global keyR
+        global keyU
+        global keyD
 
-        self.coolDown -= 1
-        if random.random() < 0.02 and self.coolDown <= 0:
-            summon[random.randrange(1, 3)] += 1
-            self.coolDown = 20
-
-        # 소환
-        for i in range(1, 7):
-            while summon[i] > 0:
-                summon[i] -= 1
-                if i % 2 == 0:
-                    self.state.append(createEntity(i, 0, 500, 350))
-                else:
-                    self.state.append(createEntity(i, 0, 0, 350))
-        
+        self.x += 8
+        while self.nextIndex < len(self.stage):
+            item = self.stage[self.nextIndex]
+            if item[1] < self.x + 640 + 54: # x위치 고려, 화면 안에 들어온 경우
+                if item[0] == 2: # code == "platform"
+                    self.state.append(createEntity(2, 0, item[1] - self.x, item[2]))
+                    for i in range(1, item[3] - 1): # item[3] = platform 길이
+                        self.state.append(createEntity(2, 1, item[1] - self.x + i * 54, item[2]))
+                    self.state.append(createEntity(2, 2, item[1] - self.x + item[3] * 54 - 54, item[2]))
+                self.nextIndex += 1
+            else:
+                break
+                
         for a in self.state:
             if a.code == 0: # 플레이어인 경우
 
-                if a.stopFrame > 0:
-                    if a.stopFrame == 1:
-                        a.walkFrame = 0
-                        if a.direction == 0:
-                            a.img = 3
-                        else:
-                            a.img = 4
-                    a.stopFrame -= 1
-                    continue
+                # a.x = 90
+                a.jumpLeft = min(a.jumpLeft, 1)
                 
-                if keyZ > 0:
-                    keyZ = 0
-                    if keyR == True:
-                        a.direction = 1
-                    elif keyL == True:
-                        a.direction = 0
-                    if a.direction == 0:
-                        a.img = 8
-                        for b in self.state:
-                            if b.code == 0:
-                                continue
-                            if self.state[0].x - 25 <= b.x and b.x <= self.state[0].x:
-                                b.hp -= 1
-                    else:
-                        a.img = 9
-                        for b in self.state:
-                            if b.code == 0:
-                                continue
-                            if self.state[0].x <= b.x and b.x <= self.state[0].x + 25:
-                                b.hp -= 1
-                    a.stopFrame = 3
-                    continue
-                if keyR == True:
-                    if a.direction == 0:
-                        a.direction = 1
-                        a.walkFrame = 0
-                    a.x += 4
-                    if a.x > 470:
-                        a.x = 470
-                    a.walkFrame += 1
-                    if a.walkFrame % 6 < 3:
-                        a.img = 4
-                    else:
-                        a.img = 5
-                elif keyL == True:
-                    if a.direction == 1:
-                        a.direction = 0
-                        a.walkFrame = 0
-                    a.x -= 4
-                    if a.x < 30:
-                        a.x = 30
-                    a.walkFrame += 1
-                    if a.walkFrame % 6 < 3:
-                        a.img = 3
-                    else:
-                        a.img = 2
-                else:
-                    a.walkFrame = 0
-                    if a.direction == 0:
-                        a.img = 3
-                    else :
-                        a.img = 4
-                    
-            if a.code == 1: # 오른쪽으로 이동하는 적
+                a.jumpFrame += 1
+                a.ySpeed += 0.8
+                if a.ySpeed > 0:
+                    for b in self.state:
+                        if b.code == 2: # 플랫폼
+                            if b.x - 27 <= a.x and a.x <= b.x + 27 and a.y + 48 <= b.y and a.y + 48 + a.ySpeed > b.y: # 충돌체크
+                                # 착지한 경우
+                                a.y = b.y - 48
+                                a.jumpFrame = 0
+                                a.jumpLeft = 2
+                                a.ySpeed = 0
+                                break
 
-                # 죽음
-                if a.hp <= 0:
-                    a.img = 5
-                    a.x -= 3
-                    a.deadFrame += 1
-                    if a.deadFrame > 10:
-                        self.state.remove(a)
-                        death[a.code] += 1
-                    continue
+                a.y += a.ySpeed
                 
-                # 플레이어와 닿음
-                if abs(self.state[0].x - a.x) < 8:
-                    playerHP -= 1 # 플레이어 HP 감소
-                    a.x = min(a.x, self.state[0].x - 4)
-                else:
-                    a.x += 4 # x좌표 오른쪽으로
-                    a.walkFrame += 1 # 프레임 +1
+                if keyU == True:
+                    keyU = False
+                    if a.jumpLeft > 0:
+                        a.ySpeed = -12.0
+                        a.jumpLeft -= 1
                 
-                # 플레이어와 x거리 150 미만
-                if self.state[0].x - a.x < 150:
-                    a.handsup = 1
-
-                # 이미지 처리
-                if a.handsup == 0:
-                    if a.walkFrame % 6 < 3:
-                        a.img = 0
-                    else :
-                        a.img = 1
+                a.walkFrame += 1
+                if a.walkFrame % 8 < 4:
+                    a.img = 2
                 else:
-                    if a.walkFrame % 6 < 3:
-                        a.img = 2
-                    else :
-                        a.img = 3
-
-            if a.code == 2: # 왼쪽으로 이동하는 적
-
-                # 죽음
-                if a.hp <= 0:
-                    a.img = 5
-                    a.x += 3
-                    a.deadFrame += 1
-                    if a.deadFrame > 10:
-                        self.state.remove(a)
-                        death[a.code] += 1
-                    continue
+                    a.img = 3
                 
-                # 플레이어와 닿음
-                if abs(self.state[0].x - a.x) < 8:
-                    playerHP -= 1 # 플레이어 HP 감소
-                    a.x = max(a.x, self.state[0].x + 4)
-                else:
-                    a.x -= 4 # x좌표 왼쪽으로
-                    a.walkFrame += 1 # 프레임 +1
+                # 성게랑
+                for b in self.state:
+                    if b.code == 1:                    
+                        if abs(a.x - b.x) < 30 and abs(a.y - b.y) < 20:
+                            pass
+
+            if a.code == 1: # 성게
+                a.x -= 10
+                if a.x < -10:
+                    self.state.remove(a)
+
+            if a.code == 2: # platform
+                a.x -= 8
+                if a.x < -50:
+                    self.state.remove(a)
                 
-                # 플레이어와 x거리 150 미만
-                if a.x - self.state[0].x < 150:
-                    a.handsup = 1
-
-                # 이미지 처리
-                if a.handsup == 0:
-                    if a.walkFrame % 6 < 3:
-                        a.img = 0
-                    else :
-                        a.img = 1
-                else:
-                    if a.walkFrame % 6 < 3:
-                        a.img = 2
-                    else :
-                        a.img = 3
-
         keyZ -= 1
         keyX -= 1
 
-    # 게임 상태 처음으로 초기화
-    def clearState(self):
-        global playerHP
-        playerHP = 100
-        self.state = []
-        self.state.append(createEntity(0, 3, 250, 350)) # player의 경우 = [entity code, img code, x, y]
-
-        for i in range(entitySize):
-            summon[i] = 0
-            death[0] = 0
-        summon[1] = 1
-        
     # state 반환
     def getState(self):
         ret = []
 
-        ret.append(self.state[0].x / 600.0)
-        
-        val = -100
-        for a in self.state:
-            if a.code == 1 and a.hp > 0:
-                val = max(val, a.x)
-                
-        ret.append((val + 100) / 600.0)
-            
-        val = 600
-        for a in self.state:
-            if a.code == 2 and a.hp > 0:
-                val = min(val, a.x)
-        ret.append(val / 600.0)
+        # 점프 잔여 횟수
+        ret.append(self.state[0].jumpLeft / 2.0)
 
+        # y, ySpeed
+        # -30~480
+        y = self.state[0].y + 30
+        if y < 0.0:
+            y = 0.0
+        if y > 510.0:
+            y = 510.0
+        ret.append(y / 510.0)
+
+        # -16~16
+        y = self.state[0].ySpeed + 16.0
+        if y < 0.0:
+            y = 0.0
+        if y > 32.0:
+            y = 32.0
+        ret.append(y / 32.0)
+
+        '''
+        obsLeft = 10
+        for a in self.state:
+            if a.code == 2:
+                if 0.0 < a.x and a.x < 640.0:
+                    ret.append(a.x/640.0)
+                    ret.append(a.y/480.0)
+                    obsLeft -= 1
+                    if obsLeft <= 0:
+                        break
+
+        while obsLeft > 0:
+            ret.append(1.0)
+            ret.append(1.0)
+            obsLeft -= 1
+        '''
+        platformLeft = 5
+        platformStart = False
+        platformX1 = 0
+        platformX2 = 0
+        platformY = 0
+        platformPrev = 0
+        for a in self.state:
+            if a.code == 2 and a.x > 0:
+                if platformStart == True:
+                    if platformPrev + 54 == a.x: # 이어짐
+                        platformPrev += 54
+                        platformX2 = a.x
+                    else: # 끊김
+                        x = platformX1 - 27
+                        if x < 0.0:
+                            x = 0.0
+                        if x > 640.0:
+                            x = 640.0
+                        ret.append(x / 640.0)
+                        x = platformX2 - 27
+                        if x < 0.0:
+                            x = 0.0
+                        if x > 640.0:
+                            x = 640.0
+                        ret.append(x / 640.0)
+                        y = platformY - 48
+                        if y < 0.0:
+                            y = 0.0
+                        if y > 480.0:
+                            y = 480.0
+                        ret.append(y / 480.0)
+                        platformLeft -= 1
+                        if platformLeft <= 0:
+                            break
+
+                        platformX1 = a.x
+                        platformY = a.y
+                        platformPrev = a.x
+                else:
+                    platformStart = True
+                    platformX1 = a.x
+                    platformY = a.y
+                    platformPrev = a.x
+            else:
+                if platformStart == True:
+                    platformStart = False
+
+        # 마지막 platform
+        if platformLeft > 0 and platformStart == True:
+            x = platformX1 - 27
+            if x < 0.0:
+                x = 0.0
+            if x > 640.0:
+                x = 640.0
+            ret.append(x / 640.0)
+            x = platformX2 - 27
+            if x < 0.0:
+                x = 0.0
+            if x > 640.0:
+                x = 640.0
+            ret.append(x / 640.0)
+            y = platformY - 48
+            if y < 0.0:
+                y = 0.0
+            if y > 480.0:
+                y = 480.0
+            ret.append(y / 480.0)
+            platformLeft -= 1
+
+        while platformLeft > 0:
+            ret.append(1.0)
+            ret.append(1.0)
+            ret.append(1.0)
+            platformLeft -= 1
+        
         return ret
 
     # 게임 초기화 후 state 반환
     def reset(self):
-        self.clearState()
+        self.buildStage()
         return self.getState()
 
     # 화면 표시
@@ -396,47 +540,30 @@ class Env:
         global keyL
         global keyR
         global keyZ
-        global playerHP
+        global keyU
+        global keyD
 
         keyL = False
         keyR = False
+        keyU = False
+        keyD = False
         keyZ = 0
+        
         if action == 0: # stop
             pass
-        if action == 1: # left
-            keyL = True
-        if action == 2: # right
-            keyR = True
-        if action == 3: # left kick
-            keyL = True
-            keyZ = 1
-        if action == 4: # right kick
-            keyR = True
-            keyZ = 1
+        if action == 1: # jump
+            keyU = True
 
-        cHP = playerHP
+        if self.state[0].jumpFrame != 0:
+            action = 0
+        
         self.update()
-        while self.state[0].stopFrame > 0:
-            if self.renderer != False:
-                sleep(0.03)
-                self.render()
-            self.update()
-
         reward = 1
-        if playerHP < cHP:
-            reward -= 1
-        if action == 3:
-            reward -= 1
-        if action == 4:
-            reward -= 1
-        for i in range(entitySize):
-            reward += death[i] * 3
-            death[i] = 0
-
-        if playerHP <= 0:
+        
+        if self.state[0].y >= 450:
             return self.getState(), reward, True, []
         else :
-            return self.getState(), reward, False, []    
-    
+            return self.getState(), reward, False, []
+        
 if __name__ == '__main__':
-    Env(True)
+    Env(True, "stageBuilder")

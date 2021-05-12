@@ -1,6 +1,7 @@
+import os
 import numpy as np
-import tensorflow as tf
 from matplotlib import pyplot as plt
+import tensorflow as tf
 from tensorflow.keras import layers
 from hyperparameters import *
 
@@ -19,13 +20,15 @@ env = Env(False)
 def getModel(obsNumber, actionNumber):
   inputs = layers.Input(obsNumber)
   full1 = layers.Dense(layerNode, activation="relu")(inputs)
-  actor = layers.Dense(actionNumber)(full1)
-  critic = layers.Dense(1)(full1)
+  full2 = layers.Dense(layerNode, activation="relu")(full1)
+  actor = layers.Dense(actionNumber)(full2)
+  critic = layers.Dense(1)(full2)
   return tf.keras.Model(inputs = inputs, outputs = [actor, critic])
-optimizer = tf.keras.optimizers.Adam(learning_rate=learningRate)
+optimizer = tf.keras.optimizers.Adam(learning_rate=learningRateA2C)
 
-model = getModel(3, 5)
-#model.load_weights("saveA2C.h5")
+model = getModel(len(env.reset()), env.actionSize)
+if os.path.isfile("saveA2C.h5"):
+  model.load_weights("saveA2C.h5")
 
 
 
@@ -38,7 +41,7 @@ def env_step(action):
 
 
 
-@tf.function
+#@tf.function
 def train_step(state):
 
   with tf.GradientTape() as tape:
@@ -52,8 +55,8 @@ def train_step(state):
     initial_state_shape = state.shape
 
     for t in tf.range(stepNumber):
-      #env.render()
-      #sleep(0.03)
+      env.render()
+      sleep(0.03)
       state = tf.expand_dims(state, 0)
 
       action_logits_t, value = model(state)
@@ -62,7 +65,10 @@ def train_step(state):
       action_probs_t = tf.nn.softmax(action_logits_t)
 
       state, reward, done = tf.numpy_function(env_step, [action], [tf.float32, tf.int32, tf.int32])
+      print(state, reward, done)
       state.set_shape(initial_state_shape)
+
+      #print(state, reward)
 
       action_probs = action_probs.write(t, action_probs_t[0, action])
       values = values.write(t, tf.squeeze(value))
@@ -104,8 +110,6 @@ def train_step(state):
 
   grads = tape.gradient(loss, model.trainable_variables)
   optimizer.apply_gradients(zip(grads, model.trainable_variables))
-
-  
 
   return tf.math.reduce_sum(rewards)
 
