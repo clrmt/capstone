@@ -8,7 +8,22 @@ from tkinter import *
 from time import *
 import math
 import random
-from hyperparameters import *
+import pygame # sound
+
+#사운드 추가 정의
+pygame.init()
+
+mySound=pygame.mixer.Sound("Eye of the Storm.mp3")
+mySound.set_volume(0.7)
+#  mySound.play(-1) # 추가 효과음
+
+clock = pygame.time.Clock()
+sound_punch = pygame.mixer.Sound('punch.mp3')
+sound_punch.set_volume(0.5)
+
+sound_monster1 = pygame.mixer.Sound('monster.mp3')
+sound_monster1.set_volume(0.1)
+#추가
 
 class Renderer:
     def __init__(self, state):
@@ -25,7 +40,7 @@ class Renderer:
         self.main.bind('<KeyRelease-Down>', keyDUp)
         self.main.bind('z', keyZDown)
         self.main.bind('x', keyXDown)
-        self.main.bind('q', summon1)
+        self.main.bind('q', summon1) #적 1 소환
         self.main.bind('w', summon2)
         self.main.bind('e', summon3)
         self.main.bind('r', summon4)
@@ -38,10 +53,10 @@ class Renderer:
         self.img = [] # 스프라이트에서 이미지 뽑아서 저장
         self.imgXY = []
         tmp = []
-        tmp.append([35, 50, 140, 100]) # 왼쪽 걷기1
-        tmp.append([185, 50, 290, 100]) # 왼쪽 걷기2
-        tmp.append([160, 200, 265, 250]) # 오른쪽 걷기1
-        tmp.append([310, 200, 415, 250]) # 오른쪽 걷기2
+        tmp.append([35, 50, 140, 100]) # 왼쪽 이동 1
+        tmp.append([185, 50, 290, 100]) # 왼쪽 이동 2
+        tmp.append([160, 200, 265, 250]) # 오른쪽 이동 1
+        tmp.append([310, 200, 415, 250]) # 오른쪽 이동 2
         tmp.append([35, 200, 140, 250]) # 왼쪽 공격1
         tmp.append([10, 350, 115, 400]) # 오른쪽 공격1
         self.imgXY.append(tmp)
@@ -55,8 +70,23 @@ class Renderer:
         tmp.append([554, 900, 608, 954]) # 1
         tmp.append([608, 900, 662, 954]) # 2
         self.imgXY.append(tmp)
+
+        tmp = []
+        tmp.append([210, 330, 280, 400]) # 보라적 이동 1 (왼쪽)
+        tmp.append([360, 330, 430, 400]) # 보라적 이동 2 (왼쪽)
+        tmp.append([620, 330, 690, 400]) # 보라적 이동 3 (오른쪽)
+        tmp.append([770, 330, 840, 400]) # 보라적 이동 4 (오른쪽)
+        tmp.append([510, 330, 580, 400]) # 보라적 공격1 (왼쪽)
+        tmp.append([20, 480, 90, 550]) # 보라적 공격1 (오른쪽)
+        tmp.append([210, 480, 280, 550]) # 줄무니적 이동 1 (왼쪽)
+        tmp.append([360, 480, 430, 550]) # 줄무니적 이동 2 (왼쪽)
+        tmp.append([620, 480, 690, 550]) # 줄무니적 이동 3  (오른쪽)
+        tmp.append([770, 480, 840, 550]) # 줄무니적 이동 4  (오른쪽)
+        tmp.append([510, 480, 580, 550]) # 줄무늬적 공격 1 (왼쪽)
+        tmp.append([20, 630, 90, 700]) # 줄무늬적 공격 1 (오른쪽)
+        self.imgXY.append(tmp)
         
-        for a in self.imgXY:
+        for a in self.imgXY:  #임시 이미지 스프라이트에서 리스트 만들어주기
 
             newList = []
             for b in a:
@@ -67,7 +97,7 @@ class Renderer:
 
         self.update(state)
         
-    def update(self, state):
+    def update(self, state):    #화면 표기를 위한 업데이트
         self.main.update()
         self.canvas.delete("all")
         self.canvas.create_image(0, 0, anchor=NW, image=self.bg)
@@ -82,17 +112,17 @@ entitySize = 7
 summon = [0, 0, 0, 0, 0, 0, 0]
 death = [0, 0, 0, 0, 0, 0, 0]
 def summon1(e):
-    summon[1] += 1
+    summon[1] += 1 #보라적 소환
 def summon2(e):
-    summon[2] += 0
+    summon[2] += 0 #미구현
 def summon3(e):
-    summon[3] += 0
+    summon[3] += 0 #미구현
 def summon4(e):
-    summon[4] += 0
+    summon[4] += 0 #미구현
 def summon5(e):
-    summon[5] += 0
+    summon[5] += 0 #미구현
 def summon6(e):
-    summon[6] += 0
+    summon[6] += 0 #미구현
 
 # 키보드 눌렸는지 여부
 keyL = False
@@ -410,6 +440,9 @@ class Env:
     # state 반환
     def getState(self):
         ret = []
+        
+        ret.append(self.state[0].x / 800.0)
+        ret.append(self.state[0].y / 800.0)
 
         # 점프 잔여 횟수
         ret.append(self.state[0].jumpLeft / 2.0)
@@ -534,6 +567,7 @@ class Env:
         if self.renderer == False:
             self.renderer = Renderer(self.state)
         self.renderer.update(self.state)
+        
 
     # 한 단계 진행할 때
     def step(self, action):
@@ -542,6 +576,9 @@ class Env:
         global keyZ
         global keyU
         global keyD
+
+        if action >= 3:
+            action += 2
 
         keyL = False
         keyR = False
