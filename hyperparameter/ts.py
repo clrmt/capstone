@@ -1,59 +1,54 @@
-import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
-from pylab import plot, title, legend, show
-from matplotlib import pyplot as plt
 
-dataset = pd.read_csv('csv/learningrate_0.0010.csv') #default
+gm = pd.read_csv('c/gamma_0.91.csv')
+gm1 = pd.read_csv('c/gamma_0.92.csv')
+gm2 = pd.read_csv('c/gamma_0.93.csv')
+gm3 = pd.read_csv('c/gamma_0.94.csv')
+gm4 = pd.read_csv('c/gamma_0.95.csv')
+gm5 = pd.read_csv('c/gamma_0.96.csv')
+gm6 = pd.read_csv('c/gamma_0.97.csv')
+gm7 = pd.read_csv('c/gamma_0.98.csv')
+gm8 = pd.read_csv('c/gamma_0.99.csv')
+gm9 = pd.read_csv('c/gamma_1.0.csv')
 
-dt1 = pd.read_csv('csv/learningrate_0.0001.csv')
-dt2 = pd.read_csv('csv/learningrate_0.0005.csv')
-dt3 = pd.read_csv('csv/learningrate_0.0015.csv')
-dt4 = pd.read_csv('csv/learningrate_0.0020.csv')
-dt5 = pd.read_csv('csv/learningrate_0.0025.csv')
-dt6 = pd.read_csv('csv/learningrate_0.0030.csv')
-dt7 = pd.read_csv('csv/learningrate_0.0040.csv')  #etc
+lr = pd.read_csv('c/lr_0.001.csv')
+lr1 = pd.read_csv('c/lr_0.0015.csv')
+lr2 = pd.read_csv('c/lr_0.002.csv')
+lr3 = pd.read_csv('c/lr_0.0025.csv')
+lr4 = pd.read_csv('c/lr_0.003.csv')
+lr5 = pd.read_csv('c/lr_0.0035.csv')
+lr6 = pd.read_csv('c/lr_0.004.csv')
+lr7 = pd.read_csv('c/lr_0.0045.csv')
+lr8 = pd.read_csv('c/lr_0.005.csv')
 
+rs = pd.read_csv('c/replaysize_16.csv')
+rs1 = pd.read_csv('c/replaysize_32.csv')
+rs2 = pd.read_csv('c/replaysize_64.csv')
+rs3 = pd.read_csv('c/replaysize_128.csv')
+rs4 = pd.read_csv('c/replaysize_256.csv')
+rs5 = pd.read_csv('c/replaysize_512.csv')
+rs6 = pd.read_csv('c/replaysize_1024.csv')
 
-merge = pd.merge(dataset, dt7)
-#print(merge) #결합
+bs = pd.read_csv('c/buffersize_128.csv')
+bs1 = pd.read_csv('c/buffersize_256.csv')
+bs2 = pd.read_csv('c/buffersize_512.csv')
+bs3 = pd.read_csv('c/buffersize_1024.csv')
+bs4 = pd.read_csv('c/buffersize_2048.csv')
+bs5 = pd.read_csv('c/buffersize_4096.csv')
 
-"""
-########산점도
-fig = plt.figure(figsize=(15,5))
-ax = fig.add_subplot(1,1,1)
-ax.plot(merge.num, merge['sum40'], 'o', label='learning_0.004', c='red')
-ax.plot(merge.num, merge['sum10'], 'o', label='learning_0.001', c='blue')
-ax.legend(loc='best')
-plt.xlabel('episode Number')
+#그래프 비교
+plt.plot(lr2['lr_0.002'])
+plt.plot(lr4['lr_0.003'])
+plt.legend(['lr_0.002', 'lr_0.003'])
 plt.ylabel('reward')
-plt.title('learningrate_0.004 & default')
+plt.title('lr_0.002 & lr_0.003')
 plt.show()
-plt.close()
-"""
 
-"""
-############배경 채워진 그래프
-plt.fill_between(merge.num, merge['sum10'], color='red', label='learning_0.001', alpha=0.3)
-plt.fill_between(merge.num, merge['sum40'], color='green', label='learning_0.004', alpha=0.2)
 
-plt.xlabel('episode Number')
+#각 그래프
+plt.plot(bs5['buffersize_4096'])
+plt.title('buffersize_4096')
 plt.ylabel('reward')
-plt.title('learningrate_0.004 & default')
-plt.grid()
-plt.legend(loc='lower right')
 plt.show()
-"""
 
-
-"""
-#############그래프
-plt.plot(merge.num, merge['sum1'], color='red')
-plt.plot(merge.num, merge['sum10'], color='blue')
-plt.legend(['learningrate_0.0001','learningrate_0.001'])
-plt.xlabel('episode Number')
-plt.ylabel('reward')
-plt.title('learningrate_0.0001 & default')
-plt.show()
-plt.close()
-"""
