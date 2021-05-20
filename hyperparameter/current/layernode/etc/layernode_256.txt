@@ -1,0 +1,113 @@
+C:\ProgramData\Anaconda3\envs\tensorflow\python.exe C:/python/pythonProject14/agent.py
+2021-05-13 11:51:04.483278: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'cudart64_110.dll'; dlerror: cudart64_110.dll not found
+2021-05-13 11:51:04.484256: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2021-05-13 11:51:15.543885: I tensorflow/compiler/jit/xla_cpu_device.cc:41] Not creating XLA devices, tf_xla_enable_xla_devices not set
+2021-05-13 11:51:15.549245: W tensorflow/stream_executor/platform/default/dso_loader.cc:60] Could not load dynamic library 'nvcuda.dll'; dlerror: nvcuda.dll not found
+2021-05-13 11:51:15.550541: W tensorflow/stream_executor/cuda/cuda_driver.cc:326] failed call to cuInit: UNKNOWN ERROR (303)
+2021-05-13 11:51:15.573772: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:169] retrieving CUDA diagnostic information for host: LAPTOP-JDE9VFPB
+2021-05-13 11:51:15.575882: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:176] hostname: LAPTOP-JDE9VFPB
+2021-05-13 11:51:15.583322: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2021-05-13 11:51:15.588028: I tensorflow/compiler/jit/xla_gpu_device.cc:99] Not creating XLA devices, tf_xla_enable_xla_devices not set
+에피소드 0 : 44, epsilon: 0.0, 보상 합:45
+에피소드 100 : 75, epsilon: 0.0, 보상 합:76
+에피소드 200 : 44, epsilon: 0.0, 보상 합:45
+에피소드 300 : 44, epsilon: 0.0, 보상 합:45
+에피소드 400 : 76, epsilon: 0.0, 보상 합:77
+에피소드 500 : 44, epsilon: 0.0, 보상 합:45
+에피소드 600 : 44, epsilon: 0.0, 보상 합:45
+에피소드 700 : 105, epsilon: 0.0, 보상 합:106
+에피소드 800 : 44, epsilon: 0.0, 보상 합:45
+에피소드 900 : 44, epsilon: 0.0, 보상 합:45
+에피소드 1000 : 44, epsilon: 0.0, 보상 합:45
+에피소드 1100 : 74, epsilon: 0.0, 보상 합:75
+에피소드 1200 : 72, epsilon: 0.0, 보상 합:73
+에피소드 1300 : 75, epsilon: 0.0, 보상 합:76
+에피소드 1400 : 44, epsilon: 0.0, 보상 합:45
+에피소드 1500 : 73, epsilon: 0.0, 보상 합:74
+에피소드 1600 : 71, epsilon: 0.0, 보상 합:72
+에피소드 1700 : 103, epsilon: 0.0, 보상 합:104
+에피소드 1800 : 76, epsilon: 0.0, 보상 합:77
+에피소드 1900 : 44, epsilon: 0.0, 보상 합:45
+에피소드 2000 : 44, epsilon: 0.0, 보상 합:45
+에피소드 2100 : 44, epsilon: 0.0, 보상 합:45
+에피소드 2200 : 76, epsilon: 0.0, 보상 합:77
+에피소드 2300 : 44, epsilon: 0.0, 보상 합:45
+에피소드 2400 : 44, epsilon: 0.0, 보상 합:45
+에피소드 2500 : 44, epsilon: 0.0, 보상 합:45
+에피소드 2600 : 44, epsilon: 0.0, 보상 합:45
+에피소드 2700 : 44, epsilon: 0.0, 보상 합:45
+에피소드 2800 : 75, epsilon: 0.0, 보상 합:76
+에피소드 2900 : 44, epsilon: 0.0, 보상 합:45
+에피소드 3000 : 104, epsilon: 0.0, 보상 합:105
+에피소드 3100 : 44, epsilon: 0.0, 보상 합:45
+에피소드 3200 : 107, epsilon: 0.0, 보상 합:108
+에피소드 3300 : 44, epsilon: 0.0, 보상 합:45
+에피소드 3400 : 74, epsilon: 0.0, 보상 합:75
+에피소드 3500 : 77, epsilon: 0.0, 보상 합:78
+에피소드 3600 : 76, epsilon: 0.0, 보상 합:77
+에피소드 3700 : 44, epsilon: 0.0, 보상 합:45
+에피소드 3800 : 104, epsilon: 0.0, 보상 합:105
+에피소드 3900 : 76, epsilon: 0.0, 보상 합:77
+에피소드 4000 : 70, epsilon: 0.0, 보상 합:71
+에피소드 4100 : 74, epsilon: 0.0, 보상 합:75
+에피소드 4200 : 59, epsilon: 0.0, 보상 합:60
+에피소드 4300 : 79, epsilon: 0.0, 보상 합:80
+에피소드 4400 : 105, epsilon: 0.0, 보상 합:106
+에피소드 4500 : 59, epsilon: 0.0, 보상 합:60
+에피소드 4600 : 89, epsilon: 0.0, 보상 합:90
+에피소드 4700 : 63, epsilon: 0.0, 보상 합:64
+에피소드 4800 : 59, epsilon: 0.0, 보상 합:60
+에피소드 4900 : 64, epsilon: 0.0, 보상 합:65
+에피소드 5000 : 49, epsilon: 0.0, 보상 합:50
+에피소드 5100 : 64, epsilon: 0.0, 보상 합:65
+에피소드 5200 : 59, epsilon: 0.0, 보상 합:60
+에피소드 5300 : 64, epsilon: 0.0, 보상 합:65
+에피소드 5400 : 117, epsilon: 0.0, 보상 합:118
+에피소드 5500 : 150, epsilon: 0.0, 보상 합:151
+에피소드 5600 : 59, epsilon: 0.0, 보상 합:60
+에피소드 5700 : 59, epsilon: 0.0, 보상 합:60
+에피소드 5800 : 59, epsilon: 0.0, 보상 합:60
+에피소드 5900 : 59, epsilon: 0.0, 보상 합:60
+에피소드 6000 : 59, epsilon: 0.0, 보상 합:60
+에피소드 6100 : 59, epsilon: 0.0, 보상 합:60
+에피소드 6200 : 49, epsilon: 0.0, 보상 합:50
+에피소드 6300 : 87, epsilon: 0.0, 보상 합:88
+에피소드 6400 : 121, epsilon: 0.0, 보상 합:122
+에피소드 6500 : 59, epsilon: 0.0, 보상 합:60
+에피소드 6600 : 60, epsilon: 0.0, 보상 합:61
+에피소드 6700 : 141, epsilon: 0.0, 보상 합:142
+에피소드 6800 : 85, epsilon: 0.0, 보상 합:86
+에피소드 6900 : 59, epsilon: 0.0, 보상 합:60
+에피소드 7000 : 64, epsilon: 0.0, 보상 합:65
+에피소드 7100 : 63, epsilon: 0.0, 보상 합:64
+에피소드 7200 : 63, epsilon: 0.0, 보상 합:64
+에피소드 7300 : 59, epsilon: 0.0, 보상 합:60
+에피소드 7400 : 63, epsilon: 0.0, 보상 합:64
+에피소드 7500 : 64, epsilon: 0.0, 보상 합:65
+에피소드 7600 : 200, epsilon: 0.0, 보상 합:201
+에피소드 7700 : 59, epsilon: 0.0, 보상 합:60
+에피소드 7800 : 64, epsilon: 0.0, 보상 합:65
+에피소드 7900 : 171, epsilon: 0.0, 보상 합:172
+에피소드 8000 : 62, epsilon: 0.0, 보상 합:63
+에피소드 8100 : 64, epsilon: 0.0, 보상 합:65
+에피소드 8200 : 64, epsilon: 0.0, 보상 합:65
+에피소드 8300 : 59, epsilon: 0.0, 보상 합:60
+에피소드 8400 : 64, epsilon: 0.0, 보상 합:65
+에피소드 8500 : 64, epsilon: 0.0, 보상 합:65
+에피소드 8600 : 306, epsilon: 0.0, 보상 합:307
+에피소드 8700 : 140, epsilon: 0.0, 보상 합:141
+에피소드 8800 : 64, epsilon: 0.0, 보상 합:65
+에피소드 8900 : 67, epsilon: 0.0, 보상 합:68
+에피소드 9000 : 64, epsilon: 0.0, 보상 합:65
+에피소드 9100 : 64, epsilon: 0.0, 보상 합:65
+에피소드 9200 : 64, epsilon: 0.0, 보상 합:65
+에피소드 9300 : 91, epsilon: 0.0, 보상 합:92
+에피소드 9400 : 64, epsilon: 0.0, 보상 합:65
+에피소드 9500 : 136, epsilon: 0.0, 보상 합:137
+에피소드 9600 : 64, epsilon: 0.0, 보상 합:65
+에피소드 9700 : 72, epsilon: 0.0, 보상 합:73
+에피소드 9800 : 302, epsilon: 0.0, 보상 합:303
+에피소드 9900 : 112, epsilon: 0.0, 보상 합:113
+
+Process finished with exit code 0
