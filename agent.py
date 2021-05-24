@@ -1,3 +1,16 @@
+# run_mode = 실행 모드
+# 1 = 초기부터 학습
+# 2 = 세이브파일로부터 이어서 학습
+# 3 = 세이브파일로부터 실행 + 화면 표시
+# 4 = 세이브파일로부터 실행 + 화면 비표시
+run_mode = 3
+
+print_interval = 1 # 에피소드의 print 간격
+main_save_file = "save.h5" # 세이브파일 이름
+stage_build_with_agent = True # Agent의 검증을 통한 스테이지 생성
+
+
+
 import os
 import random
 import numpy as np
@@ -8,10 +21,15 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
 from hyperparameters import *
-
 from env import *
-env = Env(False, "stageBuilder")
-inputDim = len(env.reset())
+
+
+
+if stage_build_with_agent == True:
+    env = Env(False, "stageBuilder")
+else:
+    env = Env(False, "")
+inputDim = env.observationSize
 outputDim = env.actionSize
 
 memory = deque(maxlen=bufferSize)
@@ -21,10 +39,15 @@ model.add(Dense(layerNode, input_dim=inputDim, activation='relu'))
 model.add(Dense(layerNode, activation='relu'))
 model.add(Dense(layerNode, activation='relu'))
 model.add(Dense(outputDim))
-opt = Adam(lr=learningRateDQN)
+opt = tf.keras.optimizers.Adam(lr=learningRateDQN)
 
-if os.path.isfile("save.h5"):
-    model.load_weights("save.h5")
+if run_mode >= 2:
+    if os.path.isfile(main_save_file):
+        model.load_weights(main_save_file)
+if run_mode >= 3:
+    epsilon = 0.0
+    epsilonMin = 0.0
+    epsilonDecay = 0.0
 
 reward_avg = 0
 reward_avgs = []
@@ -39,8 +62,9 @@ for i in range(episodeNumber):
     done = False
     
     for frameCounter in range(stepNumber):
-        env.render()
-        sleep(0.03)
+        if run_mode == 3:
+            env.render()
+            sleep(0.03)
 
         if np.random.rand() <= epsilon:
             action = random.randrange(outputDim)
@@ -67,10 +91,13 @@ for i in range(episodeNumber):
         reward_avg = reward_avg * 0.99 + totalReward * 0.01
     reward_avgs.append(reward_avg)
         
-    if i % 100 == 0:
+    if i % print_interval == 0:
         print("에피소드 ", i, " : ", maxFrame, ", epsilon: ", epsilon, ", 보상 합:", totalReward, sep='')
-        model.save("save.h5")
+        if run_mode < 3:
+            model.save(main_save_file)
 
+    if run_mode >= 3:
+        continue
     # replay memory
     if len(memory) >= replaySize:
 
